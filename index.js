@@ -40,8 +40,8 @@ StreamNode.prototype.pipesStats = function () {
   if (!this.node._readableState) return;
 
   if (!this.node._readableState.pipes) pipes = [];
-  else if (_.isObject(this.node._readableState.pipes)) pipes = [this.node._readableState.pipes];
   else if (_.isArray(this.node._readableState.pipes)) pipes = this.node._readableState.pipes;
+  else if (_.isObject(this.node._readableState.pipes)) pipes = [this.node._readableState.pipes];
   else throw "Unexpected value for _readableState.pipes";
 
   return _.map(pipes, streamToStats);

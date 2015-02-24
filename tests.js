@@ -5,18 +5,18 @@ var stream = require("stream"),
 
 exports.StreamNode = {
   basicGraph: function (test) {
-    var graph = makeBasicGraph().stats(),
+    var root = makeBasicGraph().stats(),
         passThrough,
         writable;
 
-    test.equal(graph.name, "Readable");
-    test.ok(_.isObject(graph.readable));
-    test.ok(_.isNumber(graph.readable.highWaterMark));
-    test.ok(_.isUndefined(graph.writable));
-    test.ok(_.isArray(graph.pipes));
-    test.equal(graph.pipes.length, 1);
+    test.equal(root.name, "Readable");
+    test.ok(_.isObject(root.readable));
+    test.ok(_.isNumber(root.readable.highWaterMark));
+    test.ok(_.isUndefined(root.writable));
+    test.ok(_.isArray(root.pipes));
+    test.equal(root.pipes.length, 1);
 
-    passThrough = graph.pipes[0];
+    passThrough = root.pipes[0];
 
     test.equal(passThrough.name, "PassThrough");
     test.ok(_.isObject(passThrough.writable));
@@ -38,16 +38,40 @@ exports.StreamNode = {
 
     test.done();
   },
+  multiPipeGraph: function (test) {
+    var root = makeMultiPipeGraph().stats(),
+        pipe1,
+        pipe2;
+
+    test.equal(root.name, "Readable");
+    test.ok(_.isObject(root.readable));
+    test.ok(_.isArray(root.pipes));
+    test.equal(root.pipes.length, 2);
+
+    pipe1 = root.pipes[0];
+
+    test.equal(pipe1.name, "Writable");
+    test.ok(_.isObject(pipe1.writable));
+    test.ok(_.isNumber(pipe1.writable.highWaterMark));
+
+    pipe2 = root.pipes[0];
+
+    test.equal(pipe2.name, "Writable");
+    test.ok(_.isObject(pipe2.writable));
+    test.ok(_.isNumber(pipe2.writable.highWaterMark));
+
+    test.done();
+  },
   childrenGraph: function (test) {
-    var graph = makeChildrenGraph().stats(),
+    var root = makeChildrenGraph().stats(),
         childWritable;
 
-    test.equal(graph.name, "Writable");
-    test.ok(_.isObject(graph.writable));
-    test.ok(_.isArray(graph.children));
-    test.equal(graph.children.length, 1);
+    test.equal(root.name, "Writable");
+    test.ok(_.isObject(root.writable));
+    test.ok(_.isArray(root.children));
+    test.equal(root.children.length, 1);
 
-    childWritable = graph.children[0];
+    childWritable = root.children[0];
 
     test.equal(childWritable.name, "Writable");
     test.ok(_.isObject(childWritable.writable));
@@ -72,6 +96,21 @@ function makeBasicGraph () {
   return new StreamNode(readable);
 }
 
+function makeMultiPipeGraph () {
+  var readable = new stream.Readable(),
+      pipe1 = new stream.Writable(),
+      pipe2 = new stream.Writable();
+
+  readable._read = oneRead.bind(readable);
+  pipe1._write = nullWritable;
+  pipe2._write = nullWritable;
+
+  readable.pipe(pipe1);
+  readable.pipe(pipe2);
+
+  return new StreamNode(readable);
+}
+
 function makeChildrenGraph () {
   var parentWritable = new stream.Writable(),
       childWritable = new stream.Writable();
@@ -87,6 +126,11 @@ function makeChildrenGraph () {
   parentWritable.write("HAHA");
 
   return new StreamNode(parentWritable);
+}
+
+function oneRead () {
+  this.push("Happy now?");
+  this.push(null);
 }
 
 function nullReadable () {
