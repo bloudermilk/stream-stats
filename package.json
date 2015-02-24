@@ -1,14 +1,14 @@
 {
-  "name": "stream-digraph",
+  "name": "stream-stats",
   "version": "0.0.1",
-  "description": "Collect statistics on a graph of Stream objects",
+  "description": "Stream Stats makes profiling and debugging complex NodeJS stream graphs easy",
   "main": "index.js",
   "scripts": {
     "test": "nodeunit tests.js"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/bloudermilk/stream-graph-stats"
+    "url": "https://github.com/bloudermilk/stream-stats.git"
   },
   "keywords": [
     "stream"
@@ -16,11 +16,11 @@
   "author": "Brendan Loudermilk",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bloudermilk/stream-graph-stats/issues"
+    "url": "https://github.com/bloudermilk/stream-stats/issues"
   },
-  "homepage": "https://github.com/bloudermilk/stream-graph-stats",
+  "homepage": "https://github.com/bloudermilk/stream-stats",
   "dependencies": {
-    "underscore": "1.8.1"
+    "underscore": "~ 1.8.1"
   },
   "devDependencies": {
     "nodeunit": "~ 0.9.0"
